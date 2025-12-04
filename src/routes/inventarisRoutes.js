@@ -6,31 +6,27 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 // Validation rules for inventaris creation
 const inventarisValidationRules = [
-  body('Nama_Barang')
-    .notEmpty()
-    .withMessage('Nama barang is required'),
-  body('Kode_Barang')
-    .notEmpty()
-    .withMessage('Kode barang is required'),
+  body('Nama_Barang').notEmpty().withMessage('Nama barang is required'),
+  body('Kode_Barang').notEmpty().withMessage('Kode barang is required'),
   body('Jumlah')
     .isInt({ min: 0 })
     .withMessage('Jumlah must be a positive integer'),
-  body('Kategori')
-    .notEmpty()
-    .withMessage('Kategori is required'),
+  body('Kategori').notEmpty().withMessage('Kategori is required'),
   body('Kondisi')
     .isIn(['Baik', 'Rusak Ringan', 'Rusak Berat'])
     .withMessage('Kondisi must be one of: Baik, Rusak Ringan, Rusak Berat'),
-  body('ID_User')
-    .isInt()
-    .withMessage('ID_User must be a valid integer')
 ];
 
 // Routes
 router.get('/', inventarisController.getAllInventaris);
-router.get('/stats', inventarisController.getInventarisStats);
+router.get('/stats', authMiddleware, inventarisController.getInventarisStats);
 router.get('/:id', inventarisController.getInventarisById);
-router.post('/', authMiddleware, inventarisValidationRules, inventarisController.createInventaris);
+router.post(
+  '/',
+  authMiddleware,
+  inventarisValidationRules,
+  inventarisController.createInventaris
+);
 router.put('/:id', authMiddleware, inventarisController.updateInventaris);
 router.delete('/:id', authMiddleware, inventarisController.deleteInventaris);
 
